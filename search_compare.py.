@@ -1,0 +1,116 @@
+import time
+import random
+
+
+def get_me_random_list(n):
+    """Generate list of n elements in random order.
+    
+    :param n: Number of elements in the list
+    :return: A list with n elements in random order
+    """
+    a_list = list(range(n))
+    random.shuffle(a_list)
+    return a_list
+
+
+def sequential_search(a_list, item):
+    pos = 0
+    found = False
+
+    while pos < len(a_list) and not found:
+        if a_list[pos] == item:
+            found = True
+        else:
+            pos = pos + 1
+    return found
+
+
+def ordered_sequential_search(a_list, item):
+    pos = 0
+    found = False
+    stop = False
+
+    while pos < len(a_list) and not found and not stop:
+        if a_list[pos] == item:
+            found = True
+        else:
+            if a_list[pos] > item:
+                stop = True
+            else:
+                pos = pos + 1
+    return found
+
+
+def binary_search_iterative(a_list, item):
+    first = 0
+    last = len(a_list) - 1
+    found = False
+
+    while first <= last and not found:
+        midpoint = (first + last) // 2
+        if a_list[midpoint] == item:
+            found = True
+        else:
+            if item < a_list[midpoint]:
+                last = midpoint - 1
+            else:
+                first = midpoint + 1
+    return found
+
+def binary_search_recursive(a_list, item):
+    if len(a_list) == 0:
+        return False
+    else:
+        midpoint = len(a_list) // 2
+        if a_list[midpoint] == item:
+            return True
+        else:
+            if item < a_list[midpoint]:
+                return binary_search_recursive(a_list[:midpoint], item)
+            else:
+                return binary_search_recursive(a_list[midpoint + 1:], item)
+
+
+def benchmark_search_algorithms():
+    sizes = [500, 1000, 5000]
+    search_item = 99999999  # Worst-case scenario: item not in list
+    num_trials = 100
+
+    for size in sizes:
+        print(f"\nList size: {size}")
+
+        total_time_seq = 0
+        total_time_ord_seq = 0
+        total_time_bin_iter = 0
+        total_time_bin_rec = 0
+
+        for _ in range(num_trials):
+            mylist = get_me_random_list(size)
+
+           
+            start = time.time()
+            sequential_search(mylist, search_item)
+            total_time_seq += (time.time() - start)
+
+            
+            sorted_list = sorted(mylist)
+            start = time.time()
+            ordered_sequential_search(sorted_list, search_item)
+            total_time_ord_seq += (time.time() - start)
+
+            start = time.time()
+            binary_search_iterative(sorted_list, search_item)
+            total_time_bin_iter += (time.time() - start)
+ 
+            start = time.time()
+            binary_search_recursive(sorted_list, search_item)
+            total_time_bin_rec += (time.time() - start)
+
+        print(f"Sequential Search took {total_time_seq / num_trials:10.7f} seconds to run, on average")
+        print(f"Ordered Sequential Search took {total_time_ord_seq / num_trials:10.7f} seconds to run, on average")
+        print(f"Binary Search Iterative took {total_time_bin_iter / num_trials:10.7f} seconds to run, on average")
+        print(f"Binary Search Recursive took {total_time_bin_rec / num_trials:10.7f} seconds to run, on average")
+
+
+if __name__ == "__main__":
+    benchmark_search_algorithms()
